@@ -50,3 +50,7 @@ temp/
 # Build artifacts
 *.tar.gz
 *.zip
+
+# docker-compose files
+docker-compose.dev.yml
+docker-compose.prod.yml

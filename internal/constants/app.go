@@ -4,10 +4,16 @@ import "time"
 
 const (
 	ServiceHealthyMessage = "service healthy"
-	HealthcheckTimeout    = 60 * time.Second
-	ShutdownTimeout       = 30 * time.Second
-	ReadTimeout           = 15 * time.Second
-	WriteTimeout          = 15 * time.Second
-	IdleTimeout           = 60 * time.Second
-	RequestTimeout        = 60 * time.Second
+
+	HealthcheckTimeout     = 60 * time.Second
+	ShutdownTimeout        = 30 * time.Second
+	ReadTimeout            = 15 * time.Second
+	WriteTimeout           = 15 * time.Second
+	IdleTimeout            = 60 * time.Second
+	RequestTimeout         = 60 * time.Second
+	DefaultMaxOpenConns    = 25
+	DefaultMaxIdleConns    = 25
+	DefaultConnMaxLifetime = 5 * time.Minute
+	DefaultConnMaxIdleTime = 5 * time.Minute
+	DefaultPingTimeout     = 5 * time.Second
 )
