@@ -7,18 +7,20 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 )
 
+// Response represents a standard API response.
 type Response struct {
-	Success   bool        `json:"success"`
-	Message   string      `json:"message"`
 	Data      interface{} `json:"data,omitempty"`
 	RequestID string      `json:"request_id,omitempty"`
+	Message   string      `json:"message"`
+	Success   bool        `json:"success"`
 }
 
+// ErrorResponse represents an API error response.
 type ErrorResponse struct {
-	Success   bool   `json:"success"`
+	RequestID string `json:"request_id,omitempty"`
 	Message   string `json:"message"`
 	Error     string `json:"error,omitempty"`
-	RequestID string `json:"request_id,omitempty"`
+	Success   bool   `json:"success"`
 }
 
 func SendResponse(w http.ResponseWriter, r *http.Request, data interface{}, message string, code int) {

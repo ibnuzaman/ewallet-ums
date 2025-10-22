@@ -1,6 +1,7 @@
 package helpers
 
 import (
+	"fmt"
 	"os"
 	"sync"
 
@@ -13,11 +14,12 @@ var (
 	mu   sync.RWMutex
 )
 
+// SetupConfig loads configuration from .env file and environment variables.
 func SetupConfig() error {
 	var err error
 	once.Do(func() {
 		// Load .env file if exists
-		if err = godotenv.Load(".env"); err != nil {
+		if loadErr := godotenv.Load(".env"); loadErr != nil {
 			// .env file is optional, so just log warning
 			if Logger != nil {
 				Logger.Warn("No .env file found, using system environment variables")
@@ -51,7 +53,8 @@ func SetupConfig() error {
 	return err
 }
 
-func GetEnv(key string, defaultVal string) string {
+// GetEnv retrieves environment variable value or returns default value.
+func GetEnv(key, defaultVal string) string {
 	mu.RLock()
 	defer mu.RUnlock()
 
@@ -68,13 +71,14 @@ func GetEnv(key string, defaultVal string) string {
 	return defaultVal
 }
 
+// GetRequiredEnv retrieves required environment variable or returns error.
 func GetRequiredEnv(key string) (string, error) {
 	val := GetEnv(key, "")
 	if val == "" {
 		if Logger != nil {
 			Logger.Errorf("Required environment variable %s is not set", key)
 		}
-		return "", os.ErrNotExist
+		return "", fmt.Errorf("required environment variable %s is not set", key)
 	}
 	return val, nil
 }

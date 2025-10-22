@@ -31,7 +31,7 @@ func SetupLogger() {
 	Logger = log
 }
 
-// LoggerMiddleware is a middleware that logs HTTP requests
+// LoggerMiddleware is a middleware that logs HTTP requests.
 func LoggerMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		start := time.Now()

@@ -1,12 +1,15 @@
 linters-settings:
   dupl:
     threshold: 100
+  
   funlen:
     lines: 100
     statements: 50
+  
   goconst:
     min-len: 2
-    min-occurrences: 2
+    min-occurrences: 3
+  
   gocritic:
     enabled-tags:
       - diagnostic
@@ -20,70 +23,206 @@ linters-settings:
       - octalLiteral
       - whyNoLint
       - wrapperFunc
+  
   gocyclo:
     min-complexity: 15
+  
   goimports:
     local-prefixes: github.com/ibnuzaman/ewallet-ums
-  golint:
-    min-confidence: 0
-  gomnd:
+  
+  mnd:
     settings:
       mnd:
-        checks: argument,case,condition,return
-  govet:
-    check-shadowing: true
+        checks:
+          - argument
+          - case
+          - condition
+          - return
+        ignored-numbers:
+          - '0'
+          - '1'
+          - '2'
+          - '100'
+          - '200'
+          - '400'
+          - '401'
+          - '403'
+          - '404'
+          - '500'
+  
   lll:
     line-length: 140
-  maligned:
-    suggest-new: true
+    tab-width: 1
+  
   misspell:
     locale: US
+    ignore-words:
+      - ewallet
+      - ums
+  
+  errcheck:
+    check-type-assertions: true
+    check-blank: true
+  
+  govet:
+    enable-all: true
+    disable:
+      - shadow
+  
+  revive:
+    rules:
+      - name: var-naming
+        severity: warning
+        disabled: false
+        arguments:
+          - ["ID", "URL", "HTTP", "JSON", "API", "JWT", "DB", "SQL"]
+      - name: exported
+        severity: warning
+        disabled: false
+      - name: package-comments
+        severity: warning
+        disabled: false
+  
+  staticcheck:
+    checks: ["all"]
+  
+  stylecheck:
+    checks: ["all", "-ST1000", "-ST1003"]
+  
+  gosec:
+    severity: medium
+    confidence: medium
+    excludes:
+      - G404 # Insecure random number source (rand)
+  
+  nolintlint:
+    allow-unused: false
+    require-explanation: true
+    require-specific: true
 
 linters:
   disable-all: true
   enable:
+    # Bugs
     - bodyclose
+    - errcheck
+    - gosec
+    - govet
+    - staticcheck
+    - typecheck
+    
+    # Unused code
+    - ineffassign
+    - unparam
+    - unused
+    
+    # Performance
+    - gocritic
+    - prealloc
+    
+    # Style
     - dogsled
     - dupl
-    - errcheck
-    - exportloopref
     - funlen
     - gochecknoinits
     - goconst
-    - gocritic
     - gocyclo
     - gofmt
     - goimports
-    - gomnd
+    - mnd
     - goprintffuncname
-    - gosec
     - gosimple
-    - govet
-    - ineffassign
     - lll
     - misspell
     - nakedret
     - nolintlint
-    - rowserrcheck
-    - staticcheck
+    - revive
     - stylecheck
-    - typecheck
     - unconvert
-    - unparam
-    - unused
     - whitespace
+    
+    # Bugs/Performance for specific cases
+    - copyloopvar
+    - rowserrcheck
+    - sqlclosecheck
+    
+    # Code complexity
+    - gocognit
+    - nestif
+    
+    # Error handling
+    - errname
+    - errorlint
+    
+    # Best practices
+    - bidichk
+    - contextcheck
+    - exhaustive
+    - godot
+    - gofumpt
+    - nilerr
+    - nilnil
+    - noctx
+    - predeclared
+    - tparallel
+    - wastedassign
+    - usetesting
 
 issues:
+  # Maximum issues count per one linter
+  max-issues-per-linter: 0
+  
+  # Maximum count of issues with the same text
+  max-same-issues: 0
+  
+  # List of regexps of issue texts to exclude
+  exclude:
+    - 'declaration of "(err|ctx)" shadows declaration at'
+    - 'G107: Potential HTTP request made with variable url'
+  
   exclude-rules:
+    # Exclude some linters from running on tests files
     - path: _test\.go
       linters:
-        - gomnd
+        - mnd
         - funlen
         - goconst
+        - gocyclo
+        - errcheck
+        - dupl
+        - gosec
+    
+    # Exclude linters for main.go
+    - path: main\.go
+      linters:
+        - gochecknoinits
+  
+  # Exclude files/dirs
+  exclude-dirs:
+    - bin
+    - vendor
+    - var
+    - tmp
+    - .cache
+  
+  exclude-files:
+    - ".*\\.pb\\.go$"
+    - ".*\\.gen\\.go$"
+  
+  # Show only new issues
+  new: false
 
 run:
   timeout: 5m
-  skip-dirs:
-    - bin
-    - vendor
-    - tmp
+  issues-exit-code: 1
+  tests: true
+  modules-download-mode: readonly
+  allow-parallel-runners: true
+
+output:
+  formats:
+    - format: colored-line-number
+  print-issued-lines: true
+  print-linter-name: true
+  sort-results: true
+  

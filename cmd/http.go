@@ -7,17 +7,19 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
-	"time"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+
 	"github.com/ibnuzaman/ewallet-ums/helpers"
 	"github.com/ibnuzaman/ewallet-ums/internal/api"
+	"github.com/ibnuzaman/ewallet-ums/internal/constants"
 	"github.com/ibnuzaman/ewallet-ums/internal/interfaces"
 	"github.com/ibnuzaman/ewallet-ums/internal/services"
 )
 
-func ServerHttp() {
+// ServerHTTP starts the HTTP server.
+func ServerHTTP() {
 	dependency := dependencyInject()
 
 	r := chi.NewRouter()
@@ -27,7 +29,7 @@ func ServerHttp() {
 	r.Use(middleware.RealIP)
 	r.Use(helpers.LoggerMiddleware)
 	r.Use(middleware.Recoverer)
-	r.Use(middleware.Timeout(60 * time.Second))
+	r.Use(middleware.Timeout(constants.RequestTimeout))
 
 	// Routes
 	r.Get("/healthcheck", dependency.HealthcheckAPI.HealthcheckHandlerHTTP)
@@ -37,9 +39,9 @@ func ServerHttp() {
 	srv := &http.Server{
 		Addr:         fmt.Sprintf(":%s", port),
 		Handler:      r,
-		ReadTimeout:  15 * time.Second,
-		WriteTimeout: 15 * time.Second,
-		IdleTimeout:  60 * time.Second,
+		ReadTimeout:  constants.ReadTimeout,
+		WriteTimeout: constants.WriteTimeout,
+		IdleTimeout:  constants.IdleTimeout,
 	}
 
 	// Start server in a goroutine
@@ -57,7 +59,7 @@ func ServerHttp() {
 
 	helpers.Logger.Info("Shutting down server...")
 
-	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), constants.ShutdownTimeout)
 	defer cancel()
 
 	if err := srv.Shutdown(ctx); err != nil {
@@ -67,6 +69,7 @@ func ServerHttp() {
 	helpers.Logger.Info("Server exited properly")
 }
 
+// Dependency holds all API dependencies.
 type Dependency struct {
 	HealthcheckAPI interfaces.IHealthcheckAPI
 }

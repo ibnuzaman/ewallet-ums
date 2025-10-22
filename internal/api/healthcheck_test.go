@@ -7,7 +7,7 @@ import (
 	"testing"
 )
 
-// Mock service for testing
+// Mock service for testing.
 type mockHealthcheckService struct {
 	shouldError bool
 }
@@ -26,7 +26,7 @@ func TestHealthcheck_HealthcheckHandlerHTTP_Success(t *testing.T) {
 		HealthcheckServices: mockSvc,
 	}
 
-	req := httptest.NewRequest(http.MethodGet, "/healthcheck", nil)
+	req := httptest.NewRequest(http.MethodGet, "/healthcheck", http.NoBody)
 	w := httptest.NewRecorder()
 
 	// Act
@@ -50,7 +50,7 @@ func TestHealthcheck_HealthcheckHandlerHTTP_Error(t *testing.T) {
 		HealthcheckServices: mockSvc,
 	}
 
-	req := httptest.NewRequest(http.MethodGet, "/healthcheck", nil)
+	req := httptest.NewRequest(http.MethodGet, "/healthcheck", http.NoBody)
 	w := httptest.NewRecorder()
 
 	// Act

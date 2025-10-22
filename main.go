@@ -17,5 +17,5 @@ func main() {
 	helpers.SetupLogger()
 
 	// Start HTTP server
-	cmd.ServerHttp()
+	cmd.ServerHTTP()
 }
