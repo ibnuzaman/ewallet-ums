@@ -139,31 +139,6 @@ ci: ## Run CI checks
 	@go test -v -race -coverprofile=coverage.txt ./...
 	@echo "CI checks passed!"
 
-# Database commands
-db-create: ## Create database
-	@echo "Creating database..."
-	@createdb -U $(DB_USER) -h $(DB_HOST) -p $(DB_PORT) $(DB_NAME) 2>/dev/null || echo "Database might already exist"
-	@echo "Database ready"
-
-db-drop: ## Drop database
-	@echo "Dropping database..."
-	@dropdb -U $(DB_USER) -h $(DB_HOST) -p $(DB_PORT) $(DB_NAME) 2>/dev/null || echo "Database might not exist"
-	@echo "Database dropped"
-
-db-reset: ## Reset database (drop, create, migrate)
-	@echo "Resetting database..."
-	@make db-drop || true
-	@make db-create
-	@make migrate-up
-	@echo "Database reset complete"
-
-db-status: ## Check database tables
-	@echo "Checking database status..."
-	@psql -U $(DB_USER) -h $(DB_HOST) -p $(DB_PORT) -d $(DB_NAME) -c "\dt"
-
-db-shell: ## Open database shell
-	@psql -U $(DB_USER) -h $(DB_HOST) -p $(DB_PORT) -d $(DB_NAME)
-
 # Migration commands using golang-migrate
 migrate-create: ## Create a new migration (usage: make migrate-create name=create_users)
 	@if [ -z "$(name)" ]; then \
